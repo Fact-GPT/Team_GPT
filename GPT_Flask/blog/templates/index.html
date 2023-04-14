@@ -1,0 +1,22 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Upload a Document</title>
+    <link rel="stylesheet" href={{ url_for('static', filename='main.css')}}>
+  </head>
+  <body>
+    <h1>Upload a Document</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+      <p>
+        <textarea name="text" rows="10" cols="50"></textarea>
+      </p>
+      <p>
+        <input type="file" name="file">
+      </p>
+      <p>
+        <input type="submit" value="Upload">
+      </p>
+    </form>
+  </body>
+</html>
