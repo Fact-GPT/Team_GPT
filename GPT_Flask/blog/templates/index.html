@@ -1,14 +1,14 @@
-
 <!DOCTYPE html>
 <html>
   <head>
     <title>Fact-GPT: See relevant fact-checks in your text</title>
     <link rel="stylesheet" href={{ url_for('static', filename='main.css')}}>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
   </head>
   <body>
     <h1>Fact-GPT</h1>
     <h2>Enter some text below (max 3000 characters):</h2>
-    <form action="/upload" method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" id="input-form">
       <p>
         <textarea name="text" rows="10" cols="50" maxlength="3000" required></textarea>
       </p>
@@ -21,6 +21,7 @@
     <script>
       $(document).ready(function() {
           $('#input-form').on('submit', function(event) {
+              console.log("Submitted!")
               event.preventDefault();
               var text = $('#text').val();
 

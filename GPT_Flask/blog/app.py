@@ -61,17 +61,16 @@ def summarise(text):
 
 # APP ROUTES
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET", "POST"])
 def index():
     return render_template("index.html")
 
 @app.route("/process_text", methods=["POST"])
-
 def process_text(): 
     text = request.form["text"]
     claims = summarise(text)
     if "\n" in claims:
-    claims = claims.split("\n")
+        claims = claims.split("\n")
 
     modified_queries = []
     for claim in claims:
@@ -84,7 +83,7 @@ def process_text():
         optimised_queries.append(response)
     
     output = {
-        "original_text": user_input,
+        "original_text": text,
         "claims": claims,
         "fact_check_reviews": summaries
     }
@@ -92,5 +91,5 @@ def process_text():
     return jsonify(output)
 
     if __name__ == "__main__":
-    app.run()
+        app.run()
 
