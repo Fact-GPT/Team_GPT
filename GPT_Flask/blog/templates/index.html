@@ -7,14 +7,35 @@
   </head>
   <body>
     <h1>Fact-GPT</h1>
-    <h2>Enter some text below (max 3000 characters)</h2>
+    <h2>Enter some text below (max 3000 characters):</h2>
     <form action="/upload" method="post" enctype="multipart/form-data">
       <p>
-        <textarea name="text" rows="10" cols="50"></textarea>
+        <textarea name="text" rows="10" cols="50" maxlength="3000" required></textarea>
       </p>
       <p>
-        <input type="submit" value="Submit">
+        <button type="submit">Submit</button>
       </p>
     </form>
+    <div id="output"></div>
+
+    <script>
+      $(document).ready(function() {
+          $('#input-form').on('submit', function(event) {
+              event.preventDefault();
+              var text = $('#text').val();
+
+              $.ajax({
+                  url: '/process_text',
+                  method: 'POST',
+                  data: {text: text},
+                  success: function(response) {
+                      var highlighted_text = response.highlighted_text;
+                      var fact_check_summaries = response.fact_check_summaries;
+                      // Update the DOM with the highlighted text and fact check summaries
+                  }
+              });
+          });
+      });
+  </script>
   </body>
 </html>
