@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}Fact-checking Results{% endblock %}
+
+{% block content %}
+<h1>Results</h1>
+<ul>
+{% for item in result %}
+<li>{{ item|safe }}</li>
+<br>
+{% endfor %}
+</ul>
+<a href="{{ url_for('index') }}">Go back</a>
+{% endblock %}
