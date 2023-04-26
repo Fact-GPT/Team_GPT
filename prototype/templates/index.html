@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
 
-{% block title %}Checked-Fact Finder{% endblock %}
+{% block title %}Fact-check Review Finder{% endblock %}
 
 {% block content %}
-<h1>Checked-Fact Finder</h1>
+<h1>Fact-check review finder</h1>
+<p>Enter some text or upload a text-based file to see if any of the claims included have been fact-checked before. The results draw from fact-checking reviews tagged with the <a href="https://www.claimreviewproject.com/">ClaimReview</a> system.</p>
 <form action="/" method="post" enctype="multipart/form-data">
 <textarea name="text_input" id="text_input" rows="10" cols="100" placeholder="Enter text:"></textarea><br><br>
 <input type="submit" value="Submit">

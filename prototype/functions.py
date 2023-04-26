@@ -6,12 +6,12 @@ import newspaper
 from newspaper import Article
 from newspaper import Config
 
-# Ask GPT-4
+# Ask GPT-3.5 Turbo
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(10)) 
 #To prevent API requests from timing out, gpt_request will retry max 10 times with intervals of 1-60 seconds
 def gpt_request(query):
     
-    """ Send a query to GPT-4 API and return the response """
+    """ Send a query to GPT-3.5 Turbo API and return the response """
     
     endpoint = "https://api.openai.com/v1/chat/completions"
     api_key = "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"
@@ -21,7 +21,7 @@ def gpt_request(query):
         "Authorization": f"Bearer {api_key}"
     }
     data = {
-        "model": "gpt-4",
+        "model": "gpt-3.5-turbo",
         "messages" : [{"role": "user", "content": query}],
         "max_tokens": 2000,
         "temperature": 0
@@ -35,7 +35,7 @@ def gpt_request(query):
 # Make a query using user input and ask GPT to decompose
 def decompose(text): 
     
-    """ Given a string of text, ask GPT-4 to summarise the claims made """
+    """ Given a string of text, ask GPT-3.5-Turbo to summarise the claims made """
     
     query = "List out all of the claims made in the text below that might be contentious or need to be checked. \
     Exclude any source attribution or contact information unless relevant to verifying another fact. \
