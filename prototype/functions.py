@@ -159,9 +159,9 @@ def process(text):
         data.append((factual_claim, publisher, verdict, url, summary))
     
     # include all results in a list 
-    answers = [f"In the document you have provided, {len(data)} factors have been fact-checked before."]
+    answers = [f"In the document you have provided, {len(data)} claims have been fact-checked before."]
     for (factual_claim, publisher, verdict, url, summary) in data:
-        answer = f"Factor: {factual_claim}, <br>Fact-checker: {publisher}, <br>url: <a href='{url}'>{url}</a>, <br>summary: {summary}"
+        answer = f"Claim: {factual_claim}, <br>Fact-checker: {publisher}, <br>url: <a href='{url}'>{url}</a>, <br>summary: {summary}"
         answers.append(answer)
         
     return answers

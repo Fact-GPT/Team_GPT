@@ -1,10 +1,10 @@
-The Checked-Fact Finder works following steps:
+The fact-check review finder does the following:
 
-1. Read the text input, DOCX and PDF files provided by user.
+1. Read the text input, DOCX and PDF files provided by a user.
 
-2. Break the contents down into factual claims (Ask GPT-4).
+2. Break the contents down into factual claims using GPT-3.5-Turbo.
 
-3. Make those claims simple phrases (Ask GPT-4).
+3. Simplify the phrases into search-engine friendly terms using GPT-3.5-Turbo
 
 4. Search the database of Google Fact Check Explore's database using simplified claims as keywords (Fact Check Explore's).Results will be provided as a link or a set of links. If someone have checked and published the claim before, the details, such as date of fact checking, verdict(true or not), should be contained in the link in JSON format.
 
