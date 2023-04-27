@@ -8,10 +8,12 @@
     href="{{ url_for('static', filename='Lamp_News_logo.png') }}"
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
-    <title>Checked-Fact Finder</title>
+    {% block script %}{% endblock %}
+    <title>{% block title %}Fact-check review finder{% endblock %}</title>
 </head>
 <body>
     <img src="{{ url_for('static', filename='Lamp_News_logo.png') }}" class="icon" />
+    {% block heading %} <h1>Fact-check review finder</h1>{% endblock heading %} 
     {% block content %}{% endblock %}
 </body>
 </html>

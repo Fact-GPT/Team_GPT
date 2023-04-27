@@ -1,10 +1,11 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, jsonify, session
 import os
 import functions
 from docx import Document
 import pdfplumber
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
 # setting file uploads
 UPLOAD_FOLDER = 'uploads'
@@ -44,14 +45,33 @@ def allowed_file(filename):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+
+    return render_template("index.html")
+
+@app.route('/process', methods=['GET', 'POST'])
+def process():
+    text = session.get('text', None)
+    print("Retrieved text from session:", text) 
+    if text is not None:
+        result = functions.process(text)
+        session['result'] = result
+        return jsonify(success=True)
+    else:
+        return jsonify(success=False)
+
+@app.route('/loading', methods=['GET', 'POST'])
+def loading():
     if request.method == "POST":
-        # In case text input
+        print(request.form)  
+        print(request.files)
+        # For text input
         if "text_input" in request.form:
             text = request.form["text_input"]
-            result = functions.process(text)
-            return render_template("results.html", result=result)
+            session['text'] = text
+            print("Stored text in session:", text)
+            return redirect(url_for('loading'))
         
-        # In case uploading file
+        # For uploaded file
         if "file" in request.files:
             file = request.files["file"]
             if file and allowed_file(file.filename):
@@ -68,11 +88,19 @@ def index():
                     with open(filepath, "r", encoding="utf-8") as f:
                         text = f.read()
                 os.remove(filepath)  # delete file
-                result = functions.process(text)
-                return render_template("results.html", result=result)
+                session['text'] = text
+                print("Stored text in session:", text)
+                return redirect(url_for('loading'))
+                
+    return render_template('loading.html')
 
-    return render_template("index.html")
-
+@app.route('/results')
+def results():
+    result = session.get('result', None)
+    if result is not None:
+        return render_template('results.html', result=result)
+    else:
+        return redirect(url_for('index'))
 
 if __name__ == "__main__":
     app.run(debug=True)

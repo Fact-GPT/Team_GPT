@@ -1,18 +1,40 @@
 {% extends "layout.html" %}
 
-{% block title %}Fact-check Review Finder{% endblock %}
-
 {% block content %}
-<h1>Fact-check review finder</h1>
 <p>Enter some text or upload a text-based file to see if any of the claims included have been fact-checked before. The results draw from fact-checking reviews tagged with the <a href="https://www.claimreviewproject.com/">ClaimReview</a> system.</p>
-<form action="/" method="post" enctype="multipart/form-data">
+<form id="text_form" action="/loading" method="post" enctype="multipart/form-data">
 <textarea name="text_input" id="text_input" rows="10" cols="100" maxlength="5000" placeholder="Enter text (max 5000 characters):"></textarea><br><br>
-<input type="submit" value="Submit">
+<input type="submit" value="Submit" id="submit_text" disabled>
 </form>
 <br>
-<form action="/" method="post" enctype="multipart/form-data">
+<form id="file_form" action="/loading" method="post" enctype="multipart/form-data">
 <label for="file">Upload DOCX or PDF file:</label>
 <input type="file" name="file" id="file"><br>
-<input type="submit" value="Upload">
+<input type="submit" value="Upload" id="upload_file" disabled>
 </form>
+
+<script>
+    // Get the elements
+    const textInput = document.getElementById('text_input');
+    const submitText = document.getElementById('submit_text');
+    const fileInput = document.getElementById('file');
+    const uploadFile = document.getElementById('upload_file');
+
+    // Add event listeners
+    textInput.addEventListener('input', () => {
+        if (textInput.value.trim()) {
+            submitText.disabled = false;
+        } else {
+            submitText.disabled = true;
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            uploadFile.disabled = false;
+        } else {
+            uploadFile.disabled = true;
+        }
+    });
+</script>
 {% endblock %}
