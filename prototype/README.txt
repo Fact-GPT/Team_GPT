@@ -2,25 +2,22 @@ The fact-check review finder does the following:
 
 1. Read the text input, DOCX and PDF files provided by a user.
 
-2. Break the contents down into factual claims using GPT-3.5-Turbo.
+2. Extract keywords or sets of keywords using GPT-3.5-Turbo.
 
-3. Simplify the phrases into search-engine friendly terms using GPT-3.5-Turbo
+3. Search the Google Fact Check Explore's database using keywords. Results will be provided as a link or a set of links. It should contain the details of fact check review, such as url and verdict(true or false) in the JSON format.
 
-4. Search the database of Google Fact Check Explore's database using simplified claims as keywords (Fact Check Explore's).Results will be provided as a link or a set of links. If someone have checked and published the claim before, the details, such as date of fact checking, verdict(true or not), should be contained in the link in JSON format.
+4. Collecting claim, Fact Checker, and url of fact-checker's website up from the links.
 
-5. Picking claim, Fact Checker, and url of fact-checker's website up from the JSON file in the links.
+5. Display them.   
 
-6. Jump into the website and scrape contents (newspaper3k). Then summarise it (Ask GPT-4).
-
-7. Display all sets of claim, Fact Checker, url and summary that fact-checkers have examined already. This suggests that incorrect information could be contained in the user input text or user uploaded files.   
-
-You can demonstrate the functions using "sample.docx" and "sample.pdf" which are in the same project repository. There will be three results will be shown.
+(You can demonstrate the applications using "sample.docx" and "sample.pdf" those are in the same project repository.)
 
 -----
 Structure:
  The application has been build by Flask. 
- All functions above are in the "functions.py" file. The "app.py" file just import the functions from the "functions.py" file and implement them.
- This simple structure makes it more understandable for people to understand what is happening inside the app. 
+ Most functions above are programmed in the "functions.py" file. The "app.py" file reads the text input or uploaded by the users. Then it imports the functions from the "functions.py" and implement them.
+ 
+ The core functions are calling API of both GPT-3.5-turbo and Google's database. GPT has the latest API model of "GPT-4", but it needs long time to execute. Therefore, we selected GPT-3.5-turbo for the app.
  
 -----
 Future Development:
