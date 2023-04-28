@@ -4,9 +4,6 @@ import openai
 import config
 import urllib.parse
 from tenacity import retry, stop_after_attempt, wait_random_exponential
-import newspaper
-from newspaper import Article
-from newspaper import Config
 
 # Ask GPT-3.5 Turbo
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(10)) 
@@ -32,21 +29,6 @@ def gpt_request(query):
     response_json = response.json()
     return response_json['choices'][0]['message']['content'].strip()
 
-
-# Make a query using user input and ask GPT to decompose
-def decompose(text): 
-    
-    """ Given a string of text, ask GPT-3.5-Turbo to summarise the claims made """
-    
-    query = "List out all of the claims made in the text below that might be contentious or need to be checked. \
-    Exclude any source attribution or contact information unless relevant to verifying another fact. \
-    Exclude names of people, using other identifying details, unless the name is crucial to the claim or they are famous. \
-    Also exclude any subjective facts (such as thoughts, feelings or wishes) that cannot be independently verified. \
-    List each claim as a brief bullet point, each independent and self-explanatory without reference to details from the rest of the text. \n\n"
-    
-    return gpt_request(query + text)
-
-
 # Search Google database
 def google_request(claim):
     my_headers = config.my_headers
@@ -62,42 +44,26 @@ def google_request(claim):
     
     return url
 
-
-def scrape_article(url, user_agent=None):
-    newspaper_config = Config()
-    if user_agent:
-        newspaper_config.browser_user_agent = user_agent
-    newspaper_config.request_timeout = 10
-    a = Article(url, config=newspaper_config, language='en')
-    a.download()
-    a.parse()
-    return a.title + a.text[:10000]
-
-# Summarise content using GPT-3.5 Turbo
-def summarise_content(content):
-    if content == 'NA':
-        return "This website is not working"
-    modified_content = f'Summarise the following content within 50 words: {content}'
-    response = gpt_request(modified_content)
-    return response
-
 # Process all tasks using sub-functions
 def process(text):
-    claims = decompose(text)
-    print("Claims identified: " + claims)
-    if "\n" in claims:
-        claims = claims.split("\n")
 
-    optimised_claims = [gpt_request(f'Optimise the following claim to search for related information, focusing on the actors and general topic while avoiding overly specific details: {claim}') for claim in claims]
+    # GPT extracts keywords from input text
+    query = f'Extract and list out all the keywords or sets of keywords from the text below \
+    to search relevant article. List each claim as a brief bullet point. \n\n{text}'
+    keywords = gpt_request(query).strip().split("\n")
+    print(f"Keywords: {keywords}")
 
-    print(f"Optimised claims: {optimised_claims}")
 
-    links = [google_request(optimised_claim) for optimised_claim in optimised_claims]
-
+    # search Google's database
+    links = [] 
+    for keyword in keywords:
+        link = google_request(keyword)
+        links.append(link)
     print(f"Links: {links}")
 
-    results = []
 
+    # collect results we need
+    results = []
     for link in links:
         my_headers = config.my_headers
         req = requests.get(link, headers=my_headers)
@@ -107,48 +73,25 @@ def process(text):
         if 'claims' in data:
             claims = data['claims'][:3]
             results.append(claims)
-
     print(f"Results: {results}") 
 
-    elements = []
-    for nested_list in results:
-        for nested_dict in nested_list:
-            factual_claim = nested_dict['text']
-            for contained_dict in nested_dict['claimReview']:
-                publisher = contained_dict['publisher']['name']
-                url = contained_dict['url']
-                verdict = contained_dict['textualRating']
-                elements.append((factual_claim, publisher, verdict, url))
 
+    # put publisher, verdict and url from in a list of tuples
+    elements = [] 
+    for nested_dict in results:
+        factual_claim = nested_dict[0]['text']
+        claim_review = nested_dict[0]['claimReview'][0]
+        url = claim_review['url']
+        verdict = claim_review['textualRating']
+        publisher = claim_review['publisher']['name']
+        elements.append((factual_claim, publisher, verdict, url)) 
     print(f"Elements: {elements}") 
 
-    contents = []
-    for factual_claim, publisher, verdict, url in elements:
-        if 'nytimes' in url:
-            contents.append(scrape_article(url))
-        elif 'verifythis' in url:
-            contents.append('NA')
-        else:
-            contents.append(scrape_article(url, user_agent=config.user_agent))
-
-    print(f"Contents: {contents}") 
-
-    summaries = [summarise_content(content) for content in contents]
-
-    print(f"Summaries: {summaries}") 
-
-    data = []
-    for i in range(len(elements)):
-        factual_claim, publisher, verdict, url = elements[i]
-        summary = summaries[i]
-        data.append((factual_claim, publisher, verdict, url, summary))
-    
-    print(f"Data: {data}") 
-
-    answers = [f"In the document you have provided, {len(data)} claims have been fact-checked before."]
-    for (factual_claim, publisher, verdict, url, summary) in data:
-        answer = f"Claim: {factual_claim}, <br>Fact-checker: {publisher}, <br>url: <a href='{url}'>{url}</a>, <br>summary: {summary}"
+    # include all results in a list 
+    answers = [f"Related to the document you have provided, {len(elements)} claims have been fact-checked before."]
+    for (factual_claim, publisher, verdict, url) in elements:
+        answer = f"Claim: {factual_claim}, <br>Fact-checker: {publisher}, <br>url: <a href='{url}'>{url}</a>"
         answers.append(answer)
+    print(f"Answers: {answers}")
 
-    print(f"Answers: {answers}") 
     return answers
