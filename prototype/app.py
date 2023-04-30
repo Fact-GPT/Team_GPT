@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # setting file uploads
-UPLOAD_FOLDER = '/Users/mehrgill/Desktop/prototype/uploads'
+UPLOAD_FOLDER = '/home/factgpt/Team_GPT/prototype/uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'doc', 'docx'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
