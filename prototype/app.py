@@ -4,6 +4,7 @@ import os
 import functions
 from docx import Document
 import pdfplumber
+import git
 
 
 
@@ -47,6 +48,17 @@ def read_doc(filepath):
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+###To automatically deploy python anywhere with every github push ###
+@app.route('/git_update', methods=['POST'])
+def git_update():
+    repo = git.Repo('./Team_GPT')
+    origin = repo.remotes.origin
+    repo.create_head('main',
+    origin.refs.main).set_tracking_branch(origin.refs.main).checkout()
+    origin.pull()
+    return '', 200
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
