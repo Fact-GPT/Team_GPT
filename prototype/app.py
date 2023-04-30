@@ -49,7 +49,7 @@ def read_doc(filepath):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-###To automatically deploy python anywhere with every github push ###
+####To automatically deploy python anywhere with every github push ####
 @app.route('/git_update', methods=['POST'])
 def git_update():
     repo = git.Repo('./Team_GPT')
