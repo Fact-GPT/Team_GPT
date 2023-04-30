@@ -1,14 +1,19 @@
 from flask import Flask, request, render_template, redirect, url_for, jsonify, session
+from werkzeug.utils import secure_filename
 import os
 import functions
 from docx import Document
 import pdfplumber
 
+
+
 app = Flask(__name__)
+
+
 app.secret_key = os.urandom(24)
 
 # setting file uploads
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = '/Users/mehrgill/Desktop/prototype/uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'doc', 'docx'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -51,7 +56,7 @@ def index():
 @app.route('/process', methods=['GET', 'POST'])
 def process():
     text = session.get('text', None)
-    print("Retrieved text from session:", text) 
+    print("Retrieved text from session:", text)
     if text is not None:
         result = functions.process(text)
         session['result'] = result
@@ -62,37 +67,50 @@ def process():
 @app.route('/loading', methods=['GET', 'POST'])
 def loading():
     if request.method == "POST":
-        print(request.form)  
-        print(request.files)
-        # For text input
-        if "text_input" in request.form:
-            text = request.form["text_input"]
-            session['text'] = text
-            print("Stored text in session:", text)
-            return redirect(url_for('loading'))
-        
-        # For uploaded file
-        if "file" in request.files:
-            file = request.files["file"]
-            if file and allowed_file(file.filename):
-                filepath = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
-                file.save(filepath)
-                file_ext = file.filename.rsplit('.', 1)[1].lower()
-                if file_ext == 'docx':
-                    text = read_docx(filepath)
-                elif file_ext == 'pdf':
-                    text = read_pdf(filepath)
-                elif file_ext == 'doc':
-                    text = read_doc(filepath)
-                else:
-                    with open(filepath, "r", encoding="utf-8") as f:
-                        text = f.read()
-                os.remove(filepath)  # delete file
+        try:
+            print(request.form)
+            print(request.files)
+            # For text input
+            if "text_input" in request.form:
+                text = request.form["text_input"]
                 session['text'] = text
                 print("Stored text in session:", text)
                 return redirect(url_for('loading'))
-                
-    return render_template('loading.html')
+
+            # For uploaded file
+            if "file" in request.files:
+                try:
+                    file = request.files["file"]
+                    if file and allowed_file(file.filename):
+                        filename = secure_filename(file.filename)
+                        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                        file.save(filepath)
+                        file_ext = file.filename.rsplit('.', 1)[1].lower()
+                        if file_ext == 'docx':
+                            text = read_docx(filepath)
+                        elif file_ext == 'pdf':
+                            text = read_pdf(filepath)
+                        elif file_ext == 'doc':
+                            text = read_doc(filepath)
+                        else:
+                            with open(filepath, "r", encoding="utf-8") as f:
+                                text = f.read()
+                            os.remove(filepath)  # delete file
+                        session['text'] = text
+                        print("Stored text in session:", text)
+                        return redirect(url_for('loading'))
+                except Exception as e:
+                    print("Error uploading file:", e)
+                    return jsonify(success=False, error="Error uploading file.")
+        except Exception as e:
+            print("Error:", e)
+            return jsonify(success=False, error="Error.")
+        
+    return render_template('loading.html', text=session.get('text', '')) 
+
+
+
+
 
 @app.route('/results')
 def results():
