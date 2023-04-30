@@ -1,50 +1,59 @@
+** Fact-GPT: Fact-check review finder **
+
+---
+
+// Project description //
+
+This project, by students in Cardiff University's 2022/2023 MSc Computational and Data Journalism programme cohort, is an experimental fact-checking tool using generative AI. It was built with journalists in mind, although it may have uses for broader audiences including media-literate news consumers who wish to ensure that the articles they read are likely to be accurate.
+
+
 The fact-check review finder does the following:
 
-1. Read the text input, DOCX and PDF files provided by a user.
+1. Takes text input via a text box OR an uploaded DOCX and PDF file
 
-2. Extract keywords or sets of keywords using GPT-3.5-Turbo.
+2. Identifies claims that might need fact-checking and extracts keywords relevant to these using OpenAI's GPT-3.5-Turbo model
 
-3. Search the Google Fact Check Explore's database using keywords. Results will be provided as a link or a set of links. It should contain the details of fact check review, such as url and verdict(true or false) in the JSON format.
+3.Inputs these keywords as queries in a database of fact checking articles using Google's Fact Check Tools API: https://developers.google.com/fact-check/tools/api 
 
-4. Collecting claim, Fact Checker, and url of fact-checker's website up from the links.
+4. Returns a list of fact check articles (including the claim checked, source and URL) that may be relevant to claims identified in the text
 
-5. Display them.   
+Generative AI is currently unreliable in fact-checking claims by itself. However, as a language model it has potential in understanding what claims may look like. We aim to combine this potential with Google Fact Check Tools' database of actual reviews of claims by legitimate organisations such as AFP Fact Check, PolitiFact and Full Fact, to help journalists detect any claims in source material that may already have been debunked without having to manually search for each claim themselves.
 
-(You can demonstrate the applications using "sample.docx" and "sample.pdf" those are in the same project repository.)
+The latest version of the app is currently hosted at http://factgpt.pythonanywhere.com.
+
+---
+
+// How to run this code //
+
+You will need API keys for both OpenAI and Google Cloud. More information on how to get API keys for these services can be found at https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key and https://support.google.com/googleapi/answer/6158862 respectively.
+
+You will also need to create a file called "config.py" in the same directory as "app.py". In the file, define the following variables: 
+
+gpt_api_key = '<your OpenAI API key>'
+my_headers = {'User-Agent': '<your user agent>; <your email>. <your purpose for using the data>.'}
+google_api_key = '<your Google Cloud API key>'
+user_agent = '<your user agent>; <your email>. <your purpose for using the data>.'
+
+You can find your user agent by simply searching for "my user agent" in Google.
+
+After doing the above:
+
+- Download ALL files onto local drive 
+- Run app.py on a Flask server through your terminal 
+- On the app, enter up to 5000 characters in the text box or upload a file with either a .docx or .pdf extension 
 
 -----
-Structure:
- The application has been build by Flask. 
- Most functions above are programmed in the "functions.py" file. The "app.py" file reads the text input or uploaded by the users. Then it imports the functions from the "functions.py" and implement them.
- 
- The core functions are calling API of both GPT-3.5-turbo and Google's database. GPT has the latest API model of "GPT-4", but it needs long time to execute. Therefore, we selected GPT-3.5-turbo for the app.
- 
------
-Future Development:
-1. The application takes several minutes to show the result. This must be resolved because it is too long. Potential solutions are: 
-- Development of GPT (GPT-4 works much slower than previous model "GPT-3.5-turbo.")
-- Reduce the number of times that we ask GPT-4 to do something. Now we are asking 3 times to obtain the results. 
-- Reduce stress while users waitng results by providing game.
-(How about "joke generator?" It should be deployed easily because we have done exercise on the workshop in the fall semester.)
 
-※Making a database that has results the app already searched before is not a good solution at the point when we provide the app to a small number of people.
-
-2. To make results more readable, the results would be better to be displayed with original text. The best is highlighting applicable points and shows the results when users click it or hover on there.
-
-3. The Google's database might not have sufficient amout of data (most users might get no reult.) We should think to provide alternative information instead of just telling "no results." 
-- Deploying extension function for web browser will increase the chance to see this app working.
-
-4. Some important private information are exposed to the world. API_keys, user_agent and my_header should be kept secret.
-
-5. Also, we should consider how we can operate this app without our personal keys. 
-
-6. User interface should be improved to help users.
-
-7. If we take this project more realistic, we must think about the method for collecting money from users.
-
-8. It doesn't always respond the same result for the same document.
+// Future development //
 
 
+OpenAI released a newer GPT-4 model on a limited basis on 14 March, 2023. Although this model is said to be superior in many ways, including being able to understand more context, we have also found that API calls take longer which could affect the user experience significantly. We have therefore opted to use GPT-3.5-Turbo until GPT-4 is rolled out more widely and can return responses at a comparably fast rate. 
+
+We are looking to refine the prompts to further improve the consistency, accuracy and relevance of results. 
+
+Rather than simply listing potentially related fact checks, we want to work towards returning a summary of their contents. Currently, the time taken to scrape the content of the articles and summarise them is too long and may affect the user experience. 
+
+In the longer term, this programme could be made into a plug-in for browsers or text editors, which highlights potential claims and relevant fact-checks in real-time. 
 
 
 
