@@ -47,6 +47,9 @@ def google_request(claim):
 # Process all tasks using sub-functions
 def process(text):
 
+    text = text.replace('\r\n', '').replace('\n', '').replace('\r', '') #delete new lines 
+    print(f"Text: {text}")
+
     # GPT extracts keywords from input text
     query = f'Extract and list out all the keywords or sets of keywords from the text below \
     to search relevant article. List each claim as a brief bullet point. \n\n{text}'
@@ -85,12 +88,13 @@ def process(text):
         verdict = claim_review['textualRating']
         publisher = claim_review['publisher']['name']
         elements.append((factual_claim, publisher, verdict, url)) 
+    elements = list(set(elements)) # delete duplicates
     print(f"Elements: {elements}") 
 
     # include all results in a list 
-    answers = [f"Related to the document you have provided, {len(elements)} claims have been fact-checked before."]
+    answers = [f"We found {len(elements)} fact-check articles that may be relevant to the text you provided."]
     for (factual_claim, publisher, verdict, url) in elements:
-        answer = f"Claim: {factual_claim}, <br>Fact-checker: {publisher}, <br>url: <a href='{url}'>{url}</a>"
+        answer = f"Claim: {factual_claim}, <br>Fact-checker: {publisher}, <br>url: <a href='{url}' target='_blank'>{url}</a>"
         answers.append(answer)
     print(f"Answers: {answers}")
 
