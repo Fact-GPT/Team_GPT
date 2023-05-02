@@ -25,22 +25,13 @@ The latest version of the app is currently hosted at http://factgpt.pythonanywhe
 
 // How to run this code //
 
-You will need API keys for both OpenAI and Google Cloud. More information on how to get API keys for these services can be found at https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key and https://support.google.com/googleapi/answer/6158862 respectively.
-
-You will also need to create a file called "config.py" in the same directory as "app.py". In the file, define the following variables: 
-
-gpt_api_key = '<your OpenAI API key>'
-my_headers = {'User-Agent': '<your user agent>; <your email>. <your purpose for using the data>.'}
-google_api_key = '<your Google Cloud API key>'
-user_agent = '<your user agent>; <your email>. <your purpose for using the data>.'
-
-You can find your user agent by simply searching for "my user agent" in Google.
-
-After doing the above:
-
 - Download ALL files onto local drive 
+
+- You will need API keys for both OpenAI and Google Cloud. More information on how to get API keys for these services can be found at https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key and https://support.google.com/googleapi/answer/6158862 respectively.
+
+- Follow the instructions to fill in your custom details in "config_TEMPLATE.py", and rename it "config.py". 
+
 - Run app.py on a Flask server through your terminal 
-- On the app, enter up to 5000 characters in the text box or upload a file with either a .docx or .pdf extension 
 
 -----
 
