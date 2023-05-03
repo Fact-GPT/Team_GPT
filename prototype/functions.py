@@ -4,6 +4,7 @@ import openai
 import config
 import urllib.parse
 from tenacity import retry, stop_after_attempt, wait_random_exponential
+from datetime import datetime
 
 # Ask GPT-3.5 Turbo
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(10)) 
@@ -56,7 +57,6 @@ def process(text):
     keywords = gpt_request(query).strip().split("\n")
     print(f"Keywords: {keywords}")
 
-
     # search Google's database
     links = [] 
     for keyword in keywords:
@@ -84,17 +84,23 @@ def process(text):
     for nested_dict in results:
         factual_claim = nested_dict[0]['text']
         claim_review = nested_dict[0]['claimReview'][0]
+        if 'reviewDate' in claim_review:
+            review_date = claim_review['reviewDate']
+            parsed_date = datetime.fromisoformat(review_date.rstrip("Z"))
+            formatted_date = parsed_date.strftime("%B %d, %Y")
+        else:
+            formatted_date = 'Date not found'
         url = claim_review['url']
-        verdict = claim_review['textualRating']
+        verdict = claim_review.get('textualRating', 'No rating available')
         publisher = claim_review['publisher']['name']
-        elements.append((factual_claim, publisher, verdict, url)) 
+        elements.append((factual_claim, publisher, verdict, url, formatted_date)) 
     elements = list(set(elements)) # delete duplicates
     print(f"Elements: {elements}") 
 
     # include all results in a list 
-    answers = [f"We found {len(elements)} fact-check articles that may be relevant to the text you provided."]
-    for (factual_claim, publisher, verdict, url) in elements:
-        answer = f"Claim: {factual_claim}, <br>Fact-checker: {publisher}, <br>url: <a href='{url}' target='_blank'>{url}</a>"
+    answers = [f"We found {len(elements)} fact-check articles that may be relevant to the text you provided:"]
+    for (factual_claim, publisher, verdict, url, formatted_date) in elements:
+        answer = f"Claim: {factual_claim}<br>Review date: {formatted_date}<br>Verdict: {verdict}<br>Publisher: {publisher}<br>Link: <a href='{url}' target='_blank'>{url}</a>"
         answers.append(answer)
     print(f"Answers: {answers}")
 
