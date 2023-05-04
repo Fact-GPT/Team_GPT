@@ -28,7 +28,6 @@
 </details>
 </div>
 <div class="container">
-    <div id="error-message" style="color: red;"></div>
     <form id="text_form" action="/loading" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="text_input">Enter some text:</label>
@@ -39,7 +38,7 @@
             <input type="submit" value="Submit" id="submit_text" disabled>
         </div>
     </form>
-
+    <div id="error-message" style="color: red;"></div>
     <div class="separator">
         <hr>
         <span>OR</span>
@@ -75,24 +74,27 @@
     });
 
     document.getElementById('file_form').addEventListener('submit', (event) => {
-    event.preventDefault(); // Prevent the form from submitting directly
+    const fileExtension = fileInput.value.split('.').pop().toLowerCase();
+    if (fileInput.files.length === 0 || !(fileExtension === 'doc' || fileExtension === 'docx' || fileExtension === 'pdf')) {
+        event.preventDefault(); // Prevent the form from submitting directly
 
-    const formData = new FormData(event.target);
-    fetch('/loading', {
-        method: 'POST',
-        body: formData,
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.success) {
-                window.location.href = '/loading';
-            } else {
-                document.getElementById('error-message').innerText = data.error;
-            }
+        const formData = new FormData(event.target);
+        fetch('/loading', {
+            method: 'POST',
+            body: formData,
         })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    window.location.href = '/loading';
+                } else {
+                    document.getElementById('error-message').innerText = data.error;
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
     });
 
     // Custom validation message
@@ -115,7 +117,7 @@
     // Custom validation message display
     textInput.addEventListener('invalid', (e) => {
         e.preventDefault();
-        alert(textInput.validationMessage);
+        document.getElementById('error-message').innerText = textInput.validationMessage;
     });
 
     fileInput.addEventListener('change', () => {
