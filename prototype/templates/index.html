@@ -74,28 +74,13 @@
     });
 
     document.getElementById('file_form').addEventListener('submit', (event) => {
-    event.preventDefault(); // Prevent the form from submitting directly
 
     const fileExtension = fileInput.value.split('.').pop().toLowerCase();
     if (fileInput.files.length === 0 || !(fileExtension === 'doc' || fileExtension === 'docx' || fileExtension === 'pdf')) {
-        document.getElementById('error-message').innerText = 'Please upload a DOC, DOCX, or PDF file.';
+        event.preventDefault(); // Prevent the form from submitting directly
+        document.getElementById('error-message').innerText = 'Please upload a DOC, DOCX, or PDF file containing text.';
     } else {
-        const formData = new FormData(event.target);
-        fetch('/loading', {
-            method: 'POST',
-            body: formData,
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.success) {
-                    window.location.href = '/loading';
-                } else {
-                    document.getElementById('error-message').innerText = data.error;
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+        document.getElementById('error-message').innerText = '';
         }
     });
 
