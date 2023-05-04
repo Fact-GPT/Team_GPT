@@ -1,4 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, jsonify, session
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 import functions
@@ -6,12 +8,38 @@ from docx import Document
 import pdfplumber
 import git
 
-
-
 app = Flask(__name__)
-
-
 app.secret_key = os.urandom(24)
+
+###PASSWORD PROTECTING###
+
+# dictionary to store the username and hashed password pairs
+users = {
+    'gpt': generate_password_hash('FYjbvZeZN2qrFeVGtVwW')
+}
+
+auth = HTTPBasicAuth()
+
+@auth.get_password
+def get_password(username):
+    return users.get(username)
+
+@auth.verify_password
+def verify(username, password):
+    # retrieve the hashed password from the users dictionary
+    stored_password_hash = get_password(username)
+
+    # use check_password_hash to verify the provided password against the hashed password
+    return username in users and check_password_hash(stored_password_hash, password)
+
+@app.errorhandler(401)
+def unauthorized_handler(error):
+    return 'Unauthorized access.', 401 
+
+@app.route('/')
+@auth.login_required
+def example_page():
+    return render_template('index.html')
 
 # setting file uploads
 UPLOAD_FOLDER = '/home/factgpt/Team_GPT/prototype/uploads'
@@ -62,7 +90,6 @@ def git_update():
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-
     return render_template("index.html")
 
 @app.route('/process', methods=['GET', 'POST'])
@@ -75,10 +102,6 @@ def process():
         return jsonify(success=True)
     else:
         return jsonify(success=False)
-
-def validate_text_length(text):
-    text_length = len(text)
-    return 0 < text_length <= 5000
 
 @app.route('/loading', methods=['GET', 'POST'])
 def loading():
@@ -112,10 +135,6 @@ def loading():
                             with open(filepath, "r", encoding="utf-8") as f:
                                 text = f.read()
                             os.remove(filepath)  # delete file
-                        
-                        if not validate_text_length(text):
-                            return jsonify(success=False, error="The uploaded document must contain text and be no more than 5000 characters long.")
-                
                         session['text'] = text
                         print("Stored text in session:", text)
                         return redirect(url_for('loading'))
