@@ -37,11 +37,11 @@ def google_request(claim):
 
     query = urllib.parse.quote(claim)
     language = 'en'
-    max_days = 365 #Max age of returned search results, in days
+    max_days = 1000 #Max age of returned search results, in days
     page_size = 20 #Number of pages in the search results
-    reviewPublisherSiteFilter = '' #Filter by review publisher (can be blank)
+    # reviewPublisherSiteFilter = '' #Filter by review publisher (can be blank)
 
-    url = f'{endpoint}?query={query}&key={config.google_api_key}&languageCode={language}&maxAgeDays={max_days}&pageSize={page_size}&reviewPublisherSiteFilter={reviewPublisherSiteFilter}'
+    url = f'{endpoint}?query={query}&key={config.google_api_key}&languageCode={language}&maxAgeDays={max_days}&pageSize={page_size}'
     
     return url
 
@@ -51,17 +51,14 @@ def process(text):
     text = text.replace('\r\n', '').replace('\n', '').replace('\r', '') #delete new lines 
     print(f"Text: {text}")
 
-    # GPT extracts keywords from input text
-    query = f'Extract and list out all the keywords or sets of keywords from the text below \
-    to search relevant article. List each claim as a brief bullet point. \n\n{text}'
-    keywords = gpt_request(query).strip().split("\n")
-    print(f"Keywords: {keywords}")
+    # GPT extracts search queries from input text
+    query = f'As a journalist, extract the claims in the text below that might need to be fact-checked. Phrase them like search queries, including only important keywords that indicate contextual information, such as location, dates, or individuals involved and excluding any unnecessary words. From the output you return, each individual line, if input into a search engine, should give you any relevant information to prove or disprove the claim available online. ONLY return the claim, with each claim on a separate line. For example, if the input is "Donald Trump is responsible for the egg shortage and he denies Covid-19 ever existed", the output should be something like "Donald Trump egg shortage\nDonald Trump denies Covid-19 exists".\n\n{text}'
+    
+    queries = gpt_request(query).strip().split('\n')
+    print(f"Queries: {queries}")
 
     # search Google's database
-    links = [] 
-    for keyword in keywords:
-        link = google_request(keyword)
-        links.append(link)
+    links = [google_request(query) for query in queries]
     print(f"Links: {links}")
 
 
