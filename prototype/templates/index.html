@@ -1,17 +1,60 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<p>Enter some text or upload a text-based file to see if any of the claims included have been fact-checked before. The results draw from fact-checking reviews tagged with the <a href="https://www.claimreviewproject.com/">ClaimReview</a> system.</p>
-<form id="text_form" action="/loading" method="post" enctype="multipart/form-data">
-<textarea name="text_input" id="text_input" rows="10" cols="100" maxlength="5000" placeholder="Enter text (max 5000 characters):"></textarea><br><br>
-<input type="submit" value="Submit" id="submit_text" disabled>
-</form>
-<br>
-<form id="file_form" action="/loading" method="post" enctype="multipart/form-data">
-<label for="file">Upload DOCX or PDF file:</label>
-<input type="file" name="file" id="file"><br>
-<input type="submit" value="Upload" id="upload_file" disabled>
-</form>
+<div class="container">
+    <details>
+        <summary>About this project</summary>
+    <p class="description">
+        This project, by students in Cardiff University's 2022/2023 MSc Computational and Data Journalism programme cohort, is an experimental fact-checking tool using generative AI. It was built with journalists in mind, although it may have uses for broader audiences including news consumers who wish to ensure that the articles they read are likely to be accurate.
+    </p>
+    <p class="description">
+        The fact-check review finder does the following:
+    </p>
+    <ol>
+        <li>Takes text input via a text box OR an uploaded file (.docx or .pdf)</li>
+        <li>Identifies claims that might need fact-checking and extracts keywords relevant to these using OpenAI's GPT-3.5-Turbo model</li>
+        <li>Inputs these keywords as queries in a database of fact checking articles using <a href="https://developers.google.com/fact-check/tools/api">Google's Fact Check Tools API</a></li>
+        <li>Returns a list of fact check articles (including the claim checked, source and URL) that may be relevant to claims identified in the text</li>
+    </ol>
+    <p class="description">
+        Generative AI is currently unreliable in fact-checking claims by itself. However, as a language model it has potential in understanding what claims may look like. We aim to combine this potential with Google Fact Check Tools' database of actual reviews of claims by legitimate organisations such as AFP Fact Check, PolitiFact and Full Fact, to help journalists detect any claims in source material that may already have been debunked without having to manually search for each claim themselves.
+    </p>
+    <p class="description">
+        This tool is currently in an early testing stage, and the results may not all be relevant. If you have any feedback or suggestions, please email <a href="mailto:gillm2@cardiff.ac.uk"> Mehr Gill</a>, <a href="mailto:yoshidak1@cardiff.ac.uk">Koh Yoshida</a> or <a href="mailto:zhum17@cardiff.ac.uk">Melissa Zhu</a>. 
+    </p>
+    <p class="description">
+        To try the tool, please input some text below or upload a document containing text. For best results, the text should be between 100-500 words. 
+    </p>
+</details>
+</div>
+<div class="container">
+    <form id="text_form" action="/loading" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="text_input">Enter some text:</label>
+            <textarea name="text_input" id="text_input" rows="10" placeholder="Enter text (max 5000 characters):"></textarea>
+            <p id="char_counter" style="text-align: right;">0 / 5000</p>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Submit" id="submit_text" disabled>
+        </div>
+    </form>
+
+    <div class="separator">
+        <hr>
+        <span>OR</span>
+        <hr>
+    </div>
+
+    <form id="file_form" action="/loading" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Upload a file (.docx or .pdf):</label>
+            <input type="file" name="file" id="file" accept=".docx,.pdf">
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Upload" id="upload_file" disabled>
+        </div>
+    </form>
+</div>
 
 <script>
     // Get the elements
@@ -19,6 +62,7 @@
     const submitText = document.getElementById('submit_text');
     const fileInput = document.getElementById('file');
     const uploadFile = document.getElementById('upload_file');
+    const charCounter = document.getElementById('char_counter');
 
     // Add event listeners
     textInput.addEventListener('input', () => {
@@ -35,6 +79,46 @@
         } else {
             uploadFile.disabled = true;
         }
+    });
+
+    // Custom validation message
+    // Update the character counter
+    textInput.addEventListener('input', () => {
+        const charCount = textInput.value.length;
+        charCounter.textContent = `${charCount} / 5000`;
+
+        if (charCount > 5000) {
+            submitText.disabled = true;
+            textInput.setCustomValidity('Please enter no more than 5000 characters.');
+            charCounter.style.color = 'red';
+        } else {
+            submitText.disabled = charCount === 0;
+            textInput.setCustomValidity('');
+            charCounter.style.color = '';
+        }
+    });
+
+    // Custom validation message display
+    textInput.addEventListener('invalid', (e) => {
+        e.preventDefault();
+        alert(textInput.validationMessage);
+    });
+
+    fileInput.addEventListener('change', () => {
+        const fileExtension = fileInput.value.split('.').pop().toLowerCase();
+        if (fileInput.files.length > 0 && (fileExtension === 'docx' || fileExtension === 'pdf')) {
+            uploadFile.disabled = false;
+            fileInput.setCustomValidity('');
+        } else {
+            uploadFile.disabled = true;
+            fileInput.setCustomValidity('Please upload a DOCX or PDF file.');
+        }
+    });
+
+    // Custom validation message display
+    fileInput.addEventListener('invalid', (e) => {
+        e.preventDefault();
+        alert(fileInput.validationMessage);
     });
 </script>
 {% endblock %}

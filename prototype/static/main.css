@@ -53,11 +53,11 @@ input[type="text"] {
   opacity: 1;
 }
 
-label {
+/* label {
   text-align: center;
-}
+} */
 
-/* Styles for disabled buttons */
+/* Styles for disabled buttons
 input[type="submit"]:disabled {
   padding: 12px 0;
   color: #888888;
@@ -69,18 +69,103 @@ input[type="submit"]:disabled {
 }
 
 /* Style for enabled buttons */
-input[type="submit"]:not(:disabled) {
+/* input[type="submit"]:not(:disabled) {
   padding: 12px 0;
   color: #fff;
   background-color: #10a37f;
   border: none;
   border-radius: 4px;
   text-align: center;
-  cursor: pointer;
-}
+  cursor: pointer; */
+/* } */ 
 
 .result {
   font-weight: bold;
   font-size: 20px;
   margin-top: 50px;
+}
+
+/* Styles for index description */
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0px;
+  margin-bottom: 0px;
+}
+
+p.description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+ol {
+  font-size: 1.1rem;
+  padding-left: 20px;
+}
+
+li {
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+details {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: bold;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+textarea {
+  width: 100%;
+  resize: none;
+}
+
+input[type="submit"] {
+  background-color: #10a37f;
+  border: none;
+  color: white;
+  padding: 8px 24px; /* Increase horizontal padding for wider buttons */
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 1.1rem; /* Increase font-size for better balance with the wider buttons */
+}
+
+
+input[type="submit"]:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.separator {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.separator span {
+  background-color: #f8f9fa;
+  padding: 0 10px;
+}
+
+hr {
+  border: 1px solid #eee;
+  border-width: 1px 0 0;
 }
