@@ -74,12 +74,12 @@
     });
 
     document.getElementById('file_form').addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevent the form from submitting directly
+
     const fileExtension = fileInput.value.split('.').pop().toLowerCase();
     if (fileInput.files.length === 0 || !(fileExtension === 'doc' || fileExtension === 'docx' || fileExtension === 'pdf')) {
-        event.preventDefault(); // Prevent the form from submitting directly
+        document.getElementById('error-message').innerText = 'Please upload a DOC, DOCX, or PDF file.';
     } else {
-        event.preventDefault(); 
-
         const formData = new FormData(event.target);
         fetch('/loading', {
             method: 'POST',
