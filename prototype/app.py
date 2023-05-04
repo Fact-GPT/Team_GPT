@@ -103,6 +103,10 @@ def process():
     else:
         return jsonify(success=False)
 
+def validate_text_length(text):
+    text_length = len(text)
+    return 0 < text_length <= 5000
+    
 @app.route('/loading', methods=['GET', 'POST'])
 def loading():
     if request.method == "POST":
@@ -135,6 +139,9 @@ def loading():
                             with open(filepath, "r", encoding="utf-8") as f:
                                 text = f.read()
                             os.remove(filepath)  # delete file
+                        
+                        if not validate_text_length(text):
+                            return jsonify(success=False, error="The uploaded document must contain text and be no more than 5000 characters long.")
                         session['text'] = text
                         print("Stored text in session:", text)
                         return redirect(url_for('loading'))
