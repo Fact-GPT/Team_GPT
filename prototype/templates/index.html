@@ -74,14 +74,18 @@
     });
 
     document.getElementById('file_form').addEventListener('submit', (event) => {
-
     const fileExtension = fileInput.value.split('.').pop().toLowerCase();
     if (fileInput.files.length === 0 || !(fileExtension === 'doc' || fileExtension === 'docx' || fileExtension === 'pdf')) {
-        event.preventDefault(); // Prevent the form from submitting directly
-        document.getElementById('error-message').innerText = 'Please upload a DOC, DOCX, or PDF file containing text.';
+        event.preventDefault();
+        fileInput.setCustomValidity('Please upload a DOC, DOCX, or PDF file.');
     } else {
-        document.getElementById('error-message').innerText = '';
+        fileInput.setCustomValidity('');
         }
+    });
+
+    fileInput.addEventListener('invalid', (e) => {
+        e.preventDefault();
+        document.getElementById('error-message').innerText = fileInput.validationMessage;
     });
 
     // Custom validation message
