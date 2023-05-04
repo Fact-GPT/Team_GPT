@@ -11,7 +11,7 @@
         Fact-GPT does the following:
     </p>
     <ol>
-        <li>Takes text input via a text box OR an uploaded file (.docx or .pdf)</li>
+        <li>Takes text input via a text box OR an uploaded file (.doc, .docx or .pdf)</li>
         <li>Identifies claims that might need fact-checking and extracts keywords relevant to these using OpenAI's GPT-3.5-Turbo model</li>
         <li>Inputs these keywords as queries in a database of fact checking articles using <a href="https://developers.google.com/fact-check/tools/api">Google's Fact Check Tools API</a></li>
         <li>Returns a list of fact check articles that may be relevant to claims identified in the text</li>
@@ -47,7 +47,7 @@
 
     <form id="file_form" action="/loading" method="post" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="file">Upload a file (.docx or .pdf):</label>
+            <label for="file">Upload a file (.doc, .docx or .pdf):</label>
             <input type="file" name="file" id="file" accept=".docx,.pdf">
         </div>
         <div class="form-group">
@@ -106,12 +106,12 @@
 
     fileInput.addEventListener('change', () => {
         const fileExtension = fileInput.value.split('.').pop().toLowerCase();
-        if (fileInput.files.length > 0 && (fileExtension === 'docx' || fileExtension === 'pdf')) {
+        if (fileInput.files.length > 0 && (fileExtension === 'doc' || fileExtension === 'docx' || fileExtension === 'pdf')) {
             uploadFile.disabled = false;
             fileInput.setCustomValidity('');
         } else {
             uploadFile.disabled = true;
-            fileInput.setCustomValidity('Please upload a DOCX or PDF file.');
+            fileInput.setCustomValidity('Please upload a DOC, DOCX or PDF file.');
         }
     });
 
