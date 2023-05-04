@@ -77,6 +77,8 @@
     const fileExtension = fileInput.value.split('.').pop().toLowerCase();
     if (fileInput.files.length === 0 || !(fileExtension === 'doc' || fileExtension === 'docx' || fileExtension === 'pdf')) {
         event.preventDefault(); // Prevent the form from submitting directly
+    } else {
+        event.preventDefault(); 
 
         const formData = new FormData(event.target);
         fetch('/loading', {
