@@ -3,16 +3,26 @@
 {% block title %}Fact-check reviews found{% endblock %}
 
 {% block content %}
-<h2>Results</h2>
+{% if result and result|length > 0 %}
 <ol>
     {% for item in result %}
         {% if loop.first %}
-            <p><b>{{ item|safe }}</b></p>
-        {% else %}
+            <p id = "results_statement">{{ item|safe }}</p>
+        {% elif 'Claim:' in item %}
+            <b><li>{{ item|safe }}</li></b>
+        {% elif 'Possibly related fact-checks:' in item %}
+            <p><em>{{ item|safe }}</em></p>
+        {% elif 'no related fact-check articles' in item %}
             <li>{{ item|safe }}</li>
-            <br>
+        {% else %}
+        <ul>
+            <li>{{ item|safe }}</li>
+        </ul>
         {% endif %}
     {% endfor %}
 </ol>
+{% else %}
+    {{ custom_message|safe }}
+{% endif %}
 <a href="{{ url_for('index') }}">Go back</a>
 {% endblock %}

@@ -53,36 +53,15 @@ input[type="text"] {
   opacity: 1;
 }
 
-/* label {
-  text-align: center;
-} */
-
-/* Styles for disabled buttons
-input[type="submit"]:disabled {
-  padding: 12px 0;
-  color: #888888;
-  background-color: #cccccc;
-  border: none;
-  border-radius: 4px;
-  text-align: center;
-  cursor: not-allowed;
-}
-
-/* Style for enabled buttons */
-/* input[type="submit"]:not(:disabled) {
-  padding: 12px 0;
-  color: #fff;
-  background-color: #10a37f;
-  border: none;
-  border-radius: 4px;
-  text-align: center;
-  cursor: pointer; */
-/* } */ 
-
-.result {
+/* .result {
   font-weight: bold;
   font-size: 20px;
   margin-top: 50px;
+} */
+
+#results_statement {
+  font-size: 24px;
+  text-align: center;
 }
 
 /* Styles for index description */

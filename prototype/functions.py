@@ -1,4 +1,5 @@
 import requests
+import ast
 import json
 import openai
 import config
@@ -22,7 +23,7 @@ def gpt_request(query):
     data = {
         "model": "gpt-3.5-turbo",
         "messages" : [{"role": "user", "content": query}],
-        "max_tokens": 2000,
+        "max_tokens": 3000,
         "temperature": 0
     }
 
@@ -52,53 +53,75 @@ def process(text):
     print(f"Text: {text}")
 
     # GPT extracts search queries from input text
-    query = f'As a journalist, extract the claims in the text below that might need to be fact-checked. Phrase them like search queries, including only important keywords that indicate contextual information, such as location, dates, or individuals involved and excluding any unnecessary words. From the output you return, each individual line, if input into a search engine, should give you any relevant information to prove or disprove the claim available online. ONLY return the claim, with each claim on a separate line. For example, if the input is "Donald Trump is responsible for the egg shortage and he denies Covid-19 ever existed", the output should be something like "Donald Trump egg shortage\nDonald Trump denies Covid-19 exists".\n\n{text}'
+    query = f"As a journalist, extract the claims in the text below that might need to be fact-checked. For each claim, return a tuple with two parts: the first is the claim, and the second is a list of three possible search queries that should give you any available information online to prove or disprove the claim. The search queries should include important keywords that indicate contextual information, such as location, dates, or individuals involved, and use language that aligns with the claims made in the text. For example, if the input is \'Donald Trump is responsible for the egg shortage and he denies Covid-19 ever existed\', there are two claims, so the output should be something like:[(\'Donald Trump is responsible for the egg shortage\', [\'Did Donald Trump cause the egg shortage?\', \'Donald Trump and egg prices\', \'Trump administration egg shortage\']),(\'Donald Trump denies Covid-19 ever existed\', [\'Donald Trump claims Covid-19 is a hoax\', \'Did Trump deny the existence of Covid-19?\', \'Trump administration and Covid-19 denial\'])]. ONLY return responses in a list of tuples, without any other output.\n\n{text}"
     
-    queries = gpt_request(query).strip().split('\n')
-    print(f"Queries: {queries}")
+    responses = gpt_request(query).strip()
+    print(f"Responses: {responses}")
 
-    # search Google's database
-    links = [google_request(query) for query in queries]
-    print(f"Links: {links}")
+    # Check if the response is complete
+    if responses.count('[') > responses.count(']'):
+        responses += ']' * (responses.count('[') - responses.count(']'))
+    elif responses.count('(') > responses.count(')'):
+        responses += ')' * (responses.count('(') - responses.count(')'))
 
+    # Get claims and queries in responses
+    claims_with_queries = ast.literal_eval(responses)
 
-    # collect results we need
-    results = []
-    for link in links:
-        my_headers = config.my_headers
-        req = requests.get(link, headers=my_headers)
-        print(f"Status code: {req.status_code}")
-        data = req.json()
-        print(f"Full data: {data}")
-        if 'claims' in data:
-            claims = data['claims'][:3]
-            results.append(claims)
-    print(f"Results: {results}") 
+    # Search Google's database and collect results
+    all_results = {}
+    for claim, queries in claims_with_queries:
+        claim_results = []
+        for query in queries:
+            url = google_request(query)
+            my_headers = config.my_headers
+            req = requests.get(url, headers=my_headers)
+            print(f"Status code: {req.status_code}")
+            data = req.json()
+            print(f"Full data: {data}")
+            if 'claims' in data:
+                claims = data['claims'][:3]
+                claim_results.extend(claims)
+        all_results[claim] = claim_results
+        print(f"All results: {all_results}")
 
 
     # put publisher, verdict and url from in a list of tuples
-    elements = [] 
-    for nested_dict in results:
-        factual_claim = nested_dict[0]['text']
-        claim_review = nested_dict[0]['claimReview'][0]
-        if 'reviewDate' in claim_review:
-            review_date = claim_review['reviewDate']
-            parsed_date = datetime.fromisoformat(review_date.rstrip("Z"))
-            formatted_date = parsed_date.strftime("%B %d, %Y")
-        else:
-            formatted_date = 'Date not found'
-        url = claim_review['url']
-        verdict = claim_review.get('textualRating', 'No rating available')
-        publisher = claim_review['publisher']['name']
-        elements.append((factual_claim, publisher, verdict, url, formatted_date)) 
-    elements = list(set(elements)) # delete duplicates
-    print(f"Elements: {elements}") 
+    final_results = {}
+    for claim, results in all_results.items():
+        elements = [] 
+        if results:
+            for claim_dict in results: 
+                factual_claim = claim_dict['text']
+                claim_review = claim_dict['claimReview'][0]
+                if 'reviewDate' in claim_review:
+                    review_date = claim_review['reviewDate']
+                    parsed_date = datetime.fromisoformat(review_date.rstrip("Z"))
+                    formatted_date = parsed_date.strftime("%B %d, %Y")
+                else:
+                    formatted_date = 'Date not found'
+                url = claim_review['url']
+                verdict = claim_review.get('textualRating', 'No rating available')
+                publisher = claim_review['publisher']['name']
+                elements.append((factual_claim, publisher, verdict, url, formatted_date)) 
+
+        elements = list(set(elements)) # delete duplicates
+        print(f"Elements for '{claim}': {elements}") 
+        final_results[claim] = elements
 
     # include all results in a list 
-    answers = [f"We found {len(elements)} fact-check articles that may be relevant to the text you provided:"]
-    for (factual_claim, publisher, verdict, url, formatted_date) in elements:
-        answer = f"Claim: {factual_claim}<br>Review date: {formatted_date}<br>Verdict: {verdict}<br>Publisher: {publisher}<br>Link: <a href='{url}' target='_blank'>{url}</a>"
-        answers.append(answer)
+    answers = [f"There were <b>{len(final_results)}</b> claims detected in the text you submitted that might need fact-checking."]
+    for claim, elements in final_results.items():
+        if len(elements) == 0:
+            answers.append(f"'{claim}' was identified in the text as a statement that might need fact-checking, but no related fact-check articles have been found. Nonetheless, you may have to verify this claim.")
+        else:
+            answers.append(f"Claim: {claim}")
+            answers.append("Possibly related fact-checks:")
+            for (factual_claim, publisher, verdict, url, formatted_date) in elements:
+                answer = f"Fact-checked claim: {factual_claim}<br>Review date: {formatted_date}<br>Verdict: {verdict}<br>Publisher: {publisher}<br>Link: <a href='{url}' target='_blank'>{url}</a>"
+                answers.append(answer)
+
     print(f"Answers: {answers}")
+
+    return answers
 
     return answers

@@ -161,10 +161,11 @@ def loading():
 @app.route('/results')
 def results():
     result = session.get('result', None)
-    if result is not None:
-        return render_template('results.html', result=result)
-    else:
-        return redirect(url_for('index'))
+    custom_message = "<p>There were no fact-check articles found that were relevant to the text you provided. This does not necessarily mean that everything in the text is true, just that there we could not find any related articles that were tagged as fact check articles. This tool is meant to suggest useful resources, but we still recommend verifying any claims that may seem suspicious on other platforms.</p><p>For more information on the ClaimReview markup used to identify fact check articles, <a href='https://toolbox.google.com/factcheck/about#fcmt-claimreview'>click here</a>.</p>"
+    if result is not None and not any(result):     
+        result = None  
+        
+    return render_template('results.html', result=result, custom_message=custom_message)
 
 if __name__ == "__main__":
     app.run(debug=True)
