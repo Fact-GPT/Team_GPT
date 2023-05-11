@@ -54,19 +54,13 @@ def process(text):
 
     # GPT extracts search queries from input text
     query = f"As a journalist, extract the claims in the text below that might need to be fact-checked. For each claim, return a tuple with two parts: the first is the claim, and the second is a list of three possible search queries that should give you any available information online to prove or disprove the claim. The search queries should include important keywords that indicate contextual information, such as location, dates, or individuals involved, and use language that aligns with the claims made in the text. For example, if the input is \'Donald Trump is responsible for the egg shortage and he denies Covid-19 ever existed\', there are two claims, so the output should be something like:[(\'Donald Trump is responsible for the egg shortage\', [\'Did Donald Trump cause the egg shortage?\', \'Donald Trump and egg prices\', \'Trump administration egg shortage\']),(\'Donald Trump denies Covid-19 ever existed\', [\'Donald Trump claims Covid-19 is a hoax\', \'Did Trump deny the existence of Covid-19?\', \'Trump administration and Covid-19 denial\'])]. ONLY return responses in a list of tuples, without any other output. All the strings in the tuples should be enclosed in DOUBLE quotation marks.\n\n{text}"
-    
-    responses = gpt_request(query).strip()
-    responses = responses.replace('\n', '')
-    print(f"Responses: {responses}. Type: {type(responses)}")
 
     try:
         responses = gpt_request(query).strip()
         responses = responses.replace('\n', '')
+        print(f"Responses: {responses}. Type: {type(responses)}")
         claims_with_queries = ast.literal_eval(responses)
-    
-        # further checks to ensure the result is a list of tuples
-        if not all(isinstance(i, tuple) for i in claims_with_queries):
-            raise ValueError("Response does not contain a list of tuples.")
+
     except Exception as e:
         # Handle the exception here
         print(f"An error occurred: response was not in the format expected")
@@ -130,7 +124,5 @@ def process(text):
                     answers.append(answer)
 
     print(f"Answers: {answers}")
-
-    return answers
 
     return answers
