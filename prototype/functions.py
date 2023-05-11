@@ -53,18 +53,12 @@ def process(text):
     print(f"Text: {text}")
 
     # GPT extracts search queries from input text
-    query = f"As a journalist, extract the claims in the text below that might need to be fact-checked. For each claim, return a tuple with two parts: the first is the claim, and the second is a list of three possible search queries that should give you any available information online to prove or disprove the claim. The search queries should include important keywords that indicate contextual information, such as location, dates, or individuals involved, and use language that aligns with the claims made in the text. For example, if the input is \'Donald Trump is responsible for the egg shortage and he denies Covid-19 ever existed\', there are two claims, so the output should be something like:[(\'Donald Trump is responsible for the egg shortage\', [\'Did Donald Trump cause the egg shortage?\', \'Donald Trump and egg prices\', \'Trump administration egg shortage\']),(\'Donald Trump denies Covid-19 ever existed\', [\'Donald Trump claims Covid-19 is a hoax\', \'Did Trump deny the existence of Covid-19?\', \'Trump administration and Covid-19 denial\'])]. ONLY return responses in a list of tuples, without any other output.\n\n{text}"
+    query = f"As a journalist, extract the claims in the text below that might need to be fact-checked. For each claim, return a tuple with two parts: the first is the claim, and the second is a list of three possible search queries that should give you any available information online to prove or disprove the claim. The search queries should include important keywords that indicate contextual information, such as location, dates, or individuals involved, and use language that aligns with the claims made in the text. For example, if the input is \'Donald Trump is responsible for the egg shortage and he denies Covid-19 ever existed\', there are two claims, so the output should be something like:[(\'Donald Trump is responsible for the egg shortage\', [\'Did Donald Trump cause the egg shortage?\', \'Donald Trump and egg prices\', \'Trump administration egg shortage\']),(\'Donald Trump denies Covid-19 ever existed\', [\'Donald Trump claims Covid-19 is a hoax\', \'Did Trump deny the existence of Covid-19?\', \'Trump administration and Covid-19 denial\'])]. ONLY return responses in a list of tuples, without any other output. All the strings in the tuples should be enclosed in DOUBLE quotation marks.\n\n{text}"
     
     responses = gpt_request(query).strip()
-    print(f"Responses: {responses}")
+    responses = responses.replace('\n', '')
+    print(f"Responses: {responses}. Type: {type(responses)}")
 
-    # Check if the response is complete
-    if responses.count('[') > responses.count(']'):
-        responses += ']' * (responses.count('[') - responses.count(']'))
-    elif responses.count('(') > responses.count(')'):
-        responses += ')' * (responses.count('(') - responses.count(')'))
-
-    # Get claims and queries in responses
     claims_with_queries = ast.literal_eval(responses)
 
     # Search Google's database and collect results
@@ -112,12 +106,12 @@ def process(text):
     answers = [f"There were <b>{len(final_results)}</b> claims detected in the text you submitted that might need fact-checking."]
     for claim, elements in final_results.items():
         if len(elements) == 0:
-            answers.append(f"'{claim}' was identified in the text as a statement that might need fact-checking, but no related fact-check articles have been found. Nonetheless, you may have to verify this claim.")
+            answers.append(f"<b>'{claim}'</b> was identified in the text as a statement that might need fact-checking, but no related fact-check articles have been found. Nonetheless, you may have to verify this claim.")
         else:
             answers.append(f"Claim: {claim}")
             answers.append("Possibly related fact-checks:")
             for (factual_claim, publisher, verdict, url, formatted_date) in elements:
-                answer = f"Fact-checked claim: {factual_claim}<br>Review date: {formatted_date}<br>Verdict: {verdict}<br>Publisher: {publisher}<br>Link: <a href='{url}' target='_blank'>{url}</a>"
+                answer = f"Fact-checked claim: {factual_claim}<br>Review date: {formatted_date}<br>Verdict: {verdict}<br>Publisher: <a href='{url}' target='_blank'>{publisher}</a>"
                 answers.append(answer)
 
     print(f"Answers: {answers}")

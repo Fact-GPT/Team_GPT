@@ -13,7 +13,7 @@
         {% elif 'Possibly related fact-checks:' in item %}
             <p><em>{{ item|safe }}</em></p>
         {% elif 'no related fact-check articles' in item %}
-            <li>{{ item|safe }}</li>
+            <b><li></b>{{ item|safe }}</li>
         {% else %}
         <ul>
             <li>{{ item|safe }}</li>
