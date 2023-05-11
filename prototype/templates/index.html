@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-
+{% block script %}<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>{% endblock %}
 {% block content %}
 <div class="container">
     <details>
@@ -73,22 +73,6 @@
         }
     });
 
-    document.getElementById('file_form').addEventListener('submit', (event) => {
-    const fileExtension = fileInput.value.split('.').pop().toLowerCase();
-    if (fileInput.files.length === 0 || !(fileExtension === 'doc' || fileExtension === 'docx' || fileExtension === 'pdf')) {
-        event.preventDefault();
-        fileInput.setCustomValidity('Please upload a DOC, DOCX, or PDF file.');
-    } else {
-        fileInput.setCustomValidity('');
-        }
-    });
-
-    fileInput.addEventListener('invalid', (e) => {
-        e.preventDefault();
-        document.getElementById('error-message').innerText = fileInput.validationMessage;
-    });
-
-    // Custom validation message
     // Update the character counter
     textInput.addEventListener('input', () => {
         const charCount = textInput.value.length;
@@ -105,10 +89,9 @@
         }
     });
 
-    // Custom validation message display
-    textInput.addEventListener('invalid', (e) => {
+    fileInput.addEventListener('invalid', (e) => {
         e.preventDefault();
-        document.getElementById('error-message').innerText = textInput.validationMessage;
+        document.getElementById('error-message').innerText = fileInput.validationMessage;
     });
 
     fileInput.addEventListener('change', () => {
@@ -122,12 +105,54 @@
         }
     });
 
-    // Custom validation message display
     fileInput.addEventListener('invalid', (e) => {
         e.preventDefault();
         alert(fileInput.validationMessage);
     });
 
-    
+    // Form submission using AJAX
+    $(document).ready(function() {
+        $('#text_form').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/loading',
+                data: new FormData(this),
+                type: 'POST',
+                contentType: false,
+                cache: false,
+                processData:false,
+                success: function(response) {
+                    // handle success, maybe redirect to another page
+                    window.location.href = "/loading";
+                },
+                error: function(response) {
+                    // handle error
+                    let error = JSON.parse(response.responseText);
+                    $('#error-message').text(error.error);
+                }
+            });
+        });
+
+        $('#file_form').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/loading',
+                data: new FormData(this),
+                type: 'POST',
+                contentType: false,
+                cache: false,
+                processData:false,
+                success: function(response) {
+                    // handle success, maybe redirect to another page
+                    window.location.href = "/loading";
+                },
+                error: function(response) {
+                    // handle error
+                    let error = JSON.parse(response.responseText);
+                    $('#error-message').text(error.error);
+                }
+            });
+        });
+    });
 </script>
 {% endblock %}

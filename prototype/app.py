@@ -134,15 +134,19 @@ def loading():
                             with open(filepath, "r", encoding="utf-8") as f:
                                 text = f.read()
                             os.remove(filepath)  # delete file
+
+                            if text.strip() == '':
+                                return jsonify(success=False, error="The uploaded file does not contain any text.")
+                        
                         session['text'] = text
                         print("Stored text in session:", text)
                         return redirect(url_for('loading'))
                 except Exception as e:
                     print("Error uploading file:", e)
-                    return jsonify(success=False, error="Error uploading file.")
+                    return jsonify(success=False, error="Error uploading file; please check that it is in an accepted format and contains text."), 400
         except Exception as e:
             print("Error:", e)
-            return jsonify(success=False, error="Error.")
+            return jsonify(success=False, error="Error uploading file; please check that it is in an accepted format and contains text."), 400
         
     return render_template('loading.html', text=session.get('text', '')) 
 
