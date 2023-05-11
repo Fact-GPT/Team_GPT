@@ -39,7 +39,7 @@ def google_request(claim):
     query = urllib.parse.quote(claim)
     language = 'en'
     max_days = 1000 #Max age of returned search results, in days
-    page_size = 20 #Number of pages in the search results
+    page_size = 2 #Number of pages in the search results
     # reviewPublisherSiteFilter = '' #Filter by review publisher (can be blank)
 
     url = f'{endpoint}?query={query}&key={config.google_api_key}&languageCode={language}&maxAgeDays={max_days}&pageSize={page_size}'
@@ -53,7 +53,7 @@ def process(text):
     print(f"Text: {text}")
 
     # GPT extracts search queries from input text
-    query = f"As a journalist, extract the claims in the text below that might need to be fact-checked. For each claim, return a tuple with two parts: the first is the claim, and the second is a list of three possible search queries that should give you any available information online to prove or disprove the claim. The search queries should include important keywords that indicate contextual information, such as location, dates, or individuals involved, and use language that aligns with the claims made in the text. ONLY return responses in a list of tuples, without any other output. All the strings in the tuples should be enclosed in DOUBLE quotation marks. For example, if the input is \'Donald Trump is responsible for the egg shortage and he denies Covid-19 ever existed\', there are two claims, so the output should be something like:[(\"Donald Trump is responsible for the egg shortage\", [\"Did Donald Trump cause the egg shortage?\", \"Donald Trump and egg prices\", \"Trump administration egg shortage\"]),(\"Donald Trump denies Covid-19 ever existed\", [\"Donald Trump claims Covid-19 is a hoax\", \"Did Trump deny the existence of Covid-19?\", \"Trump administration and Covid-19 denial\"])].\n\n{text}"
+    query = f"As a journalist, extract the claims in the text below that might need to be fact-checked. For each claim, return a tuple with two parts: the first is the claim, and the second is a list of three possible search queries that should give you any available information online to prove or disprove the claim. The search queries should include important keywords that indicate contextual information, such as location, dates, or individuals involved, and use language that aligns with the claims made in the text. All the strings in the tuples should be enclosed in DOUBLE quotation marks. For example, if the input is \"Donald Trump is responsible for the egg shortage and he denies Covid-19 ever existed\", there are two claims, so the output should be something like:[(\"Donald Trump is responsible for the egg shortage\", [\"Donald Trump caused egg shortage?\", \"Donald Trump egg prices\", \"Trump administration egg shortage\"]),(\"Donald Trump denies Covid-19 ever existed\", [\"Donald Trump claims Covid-19 is a hoax\", \"Trump denies existence of Covid-19\", \"Trump administration and Covid-19 denial\"])]. ONLY return responses in a list of tuples, without any other output even if you think that the claims are unlikely to be true. \n\n{text}"
 
     try:
         responses = gpt_request(query).strip()
