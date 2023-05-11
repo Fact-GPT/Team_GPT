@@ -1,5 +1,6 @@
 import requests
 import ast
+import re
 import json
 import openai
 import config
@@ -55,14 +56,31 @@ def process(text):
     # GPT extracts search queries from input text
     query = f"As a journalist, extract the claims in the text below that might need to be fact-checked. For each claim, return a tuple with two parts: the first is the claim, and the second is a list of three possible search queries that should give you any available information online to prove or disprove the claim. The search queries should include important keywords that indicate contextual information, such as location, dates, or individuals involved, and use language that aligns with the claims made in the text. All the strings in the tuples should be enclosed in DOUBLE quotation marks. For example, if the input is \"Donald Trump is responsible for the egg shortage and he denies Covid-19 ever existed\", there are two claims, so the output should be something like:[(\"Donald Trump is responsible for the egg shortage\", [\"Donald Trump caused egg shortage?\", \"Donald Trump egg prices\", \"Trump administration egg shortage\"]),(\"Donald Trump denies Covid-19 ever existed\", [\"Donald Trump claims Covid-19 is a hoax\", \"Trump denies existence of Covid-19\", \"Trump administration and Covid-19 denial\"])]. ONLY return responses in a list of tuples, without any other output even if you think that the claims are unlikely to be true. \n\n{text}"
 
+    def extract_list_of_tuples(api_response):
+        # Use regular expression to find the pattern starting with '[("' and ending with '")]'
+        match = re.search(r'\[\(.*?\)\](?!\))', api_response, re.DOTALL)
+
+        # If found, return the match
+        if match:
+            return match.group()
+        else:
+            return None
+    
     try:
         responses = gpt_request(query).strip()
         responses = responses.replace('\n', '')
         print(f"Responses: {responses}. Type: {type(responses)}")
-        claims_with_queries = ast.literal_eval(responses)
+
+        responses = extract_list_of_tuples(responses)
+        if responses is not None:
+            claims_with_queries = ast.literal_eval(responses)
+            print(f"List of tuples found: {claims_with_queries}")
+        else:
+            raise ValueError("The response is not in the expected format")
+            claims_with_queries = []
     except Exception as e:
         # Handle the exception here
-        print(f"An error occurred: response was not in the format expected")
+        print(f"An error occurred: {str(e)}")
         claims_with_queries = []
 
 
