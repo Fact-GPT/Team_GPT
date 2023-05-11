@@ -134,6 +134,11 @@ input[type="submit"]:disabled {
   cursor: not-allowed;
 }
 
+#footnote {
+  font-size: 16px;
+  text-align: left;
+}
+
 .separator {
   text-align: center;
   margin-bottom: 20px;

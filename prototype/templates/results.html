@@ -3,6 +3,7 @@
 {% block title %}Fact-GPT: Results{% endblock %}
 
 {% block content %}
+{% set ns = namespace(footnote=false) %}
 {% if result and result|length > 0 %}
 <ol>
     {% for item in result %}
@@ -18,11 +19,13 @@
         <ul>
             <li>{{ item|safe }}</li>
         </ul>
+        {% set ns.footnote = true %}
         {% endif %}
     {% endfor %}
 </ol>
-{% else %}
-    {{ custom_message|safe }}
+    {% if ns.footnote %}
+        <p id="footnote"><sup><b>*</b></sup>Publishers may have different ways of phrasing the verdicts depending on their own classification systems. For more information on what the verdicts mean, please refer to the individual publishers' websites.</p>
+    {% endif %}
 {% endif %}
 <a href="{{ url_for('index') }}">Go back</a>
 {% endblock %}

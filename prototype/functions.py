@@ -137,7 +137,7 @@ def process(text):
                 answers.append(f"Claim: {claim}")
                 answers.append("Possibly related fact-checks:")
                 for (factual_claim, publisher, verdict, url, formatted_date) in elements:
-                    answer = f"Fact-checked claim: {factual_claim}<br>Review date: {formatted_date}<br>Verdict: {verdict}<br>Publisher: <a href='{url}' target='_blank'>{publisher}</a>"
+                    answer = f"Fact-checked claim: {factual_claim}<br>Review date: {formatted_date}<br>Verdict<sup><b>*</b></sup>: {verdict}<br>Publisher: <a href='{url}' target='_blank'>{publisher}</a>"
                     answers.append(answer)
 
     print(f"Answers: {answers}")
