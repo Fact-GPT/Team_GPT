@@ -25,12 +25,11 @@ def get_password(username):
     return users.get(username)
 
 @auth.verify_password
-def verify(username, password):
-    # retrieve the hashed password from the users dictionary
-    stored_password_hash = get_password(username)
-
-    # use check_password_hash to verify the provided password against the hashed password
-    return username in users and check_password_hash(stored_password_hash, password)
+def verify_password(username, password):
+    if username in users and check_password_hash(users.get(username), password):
+        session['username'] = username
+        return True
+    return False
 
 @app.errorhandler(401)
 def unauthorized_handler(error):
@@ -103,10 +102,6 @@ def process():
     else:
         return jsonify(success=False)
 
-def validate_text_length(text):
-    text_length = len(text)
-    return 0 < text_length <= 5000
-
 @app.route('/loading', methods=['GET', 'POST'])
 def loading():
     if request.method == "POST":
@@ -139,9 +134,6 @@ def loading():
                             with open(filepath, "r", encoding="utf-8") as f:
                                 text = f.read()
                             os.remove(filepath)  # delete file
-                        
-                        if not validate_text_length(text):
-                            return jsonify(success=False, error="ERROR: The uploaded document must contain text and be no more than 5000 characters long.")
                         session['text'] = text
                         print("Stored text in session:", text)
                         return redirect(url_for('loading'))
@@ -160,8 +152,11 @@ def loading():
 
 @app.route('/results')
 def results():
-    result = session.get('result')
-    return render_template('results.html', result=result)
+    result = session.get('result', None)
+    if result is not None:
+        return render_template('results.html', result=result)
+    else:
+        return redirect(url_for('index'))
 
 if __name__ == "__main__":
     app.run(debug=True)
