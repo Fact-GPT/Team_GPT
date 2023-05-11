@@ -142,7 +142,11 @@ def process(text):
     if len(final_results) == 0: 
         answers = [f"We could not detect any claims that might need to be fact-checked in the text you provided. However, you may still want to verify any claims you find suspicious on other platforms."]
     else: 
-        answers = [f"There were <b>{len(final_results)}</b> claims detected in the text you submitted that might need fact-checking."]
+        if len(final_results) == 1: 
+            answers = ["There was <b>1</b> claim detected in the text you submitted that might need fact-checking."]
+        else: 
+            answers = [f"There were <b>{len(final_results)}</b> claims detected in the text you submitted that might need fact-checking."]
+        
         for claim, elements in final_results.items():
             if len(elements) == 0:
                 answers.append(f"<b>'{claim}'</b> was identified in the text as a statement that might need fact-checking, but no related fact-check articles have been found. Nonetheless, you may have to verify this claim. For more information on the articles included in this search, please refer to <a href='https://toolbox.google.com/factcheck/about#fcmt-claimreview' target='_blank'>Google Fact Check Tools</a>.")
