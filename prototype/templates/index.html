@@ -11,7 +11,7 @@
         Fact-GPT does the following:
     </p>
     <ol>
-        <li>Takes text input via a text box OR an uploaded file (.doc, .docx or .pdf)</li>
+        <li>Takes text input via a text box up to 5000 characters</li>
         <li>Identifies claims that might need fact-checking and extracts keywords relevant to these using OpenAI's GPT-3.5-Turbo model</li>
         <li>Inputs these keywords as queries in a database of fact check articles using <a href="https://developers.google.com/fact-check/tools/api">Google's Fact Check Tools API</a> (for more information on the articles included in this search, please refer to <a href='https://toolbox.google.com/factcheck/about#fcmt-claimreview' target='_blank'>Google Fact Check Tools</a>)</li>
         <li>Returns a list of claims that may need to be fact-checked, as well as any publishedd fact check articles found in the database that may be relevant to claims identified in the text.</li>
@@ -23,7 +23,7 @@
         This tool is currently in an early testing stage, and not all results may be relevant. If you have any feedback or suggestions, please email <a href="mailto:gillm2@cardiff.ac.uk"> Mehr Gill</a>, <a href="mailto:yoshidak1@cardiff.ac.uk">Koh Yoshida</a> or <a href="mailto:zhum17@cardiff.ac.uk">Melissa Zhu</a>. 
     </p>
     <p class="description">
-        To try the tool, please input some text below or upload a document containing text. For best results, the text should be in English, and contain at least one complete statement (instead of just keywords). 
+        To try the tool, please input some text below, up to a maximum of 5000 characters. For best results, the text should be in English, and contain at least one complete statement (instead of just keywords). 
     </p>
 </details>
 </div>
