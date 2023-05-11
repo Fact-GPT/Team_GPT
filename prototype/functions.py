@@ -59,7 +59,19 @@ def process(text):
     responses = responses.replace('\n', '')
     print(f"Responses: {responses}. Type: {type(responses)}")
 
-    claims_with_queries = ast.literal_eval(responses)
+    try:
+        responses = gpt_request(query).strip()
+        responses = responses.replace('\n', '')
+        claims_with_queries = ast.literal_eval(responses)
+    
+        # further checks to ensure the result is a list of tuples
+        if not all(isinstance(i, tuple) for i in claims_with_queries):
+            raise ValueError("Response does not contain a list of tuples.")
+    except Exception as e:
+        # Handle the exception here
+        print(f"An error occurred: response was not in the format expected")
+        claims_with_queries = []
+
 
     # Search Google's database and collect results
     all_results = {}
@@ -103,16 +115,19 @@ def process(text):
         final_results[claim] = elements
 
     # include all results in a list 
-    answers = [f"There were <b>{len(final_results)}</b> claims detected in the text you submitted that might need fact-checking."]
-    for claim, elements in final_results.items():
-        if len(elements) == 0:
-            answers.append(f"<b>'{claim}'</b> was identified in the text as a statement that might need fact-checking, but no related fact-check articles have been found. Nonetheless, you may have to verify this claim.")
-        else:
-            answers.append(f"Claim: {claim}")
-            answers.append("Possibly related fact-checks:")
-            for (factual_claim, publisher, verdict, url, formatted_date) in elements:
-                answer = f"Fact-checked claim: {factual_claim}<br>Review date: {formatted_date}<br>Verdict: {verdict}<br>Publisher: <a href='{url}' target='_blank'>{publisher}</a>"
-                answers.append(answer)
+    if len(final_results) == 0: 
+        answers = [f"We could not detect any claims that might need to be fact-checked in the text you provided. However, you may still want to verify any claims you find suspicious on other platforms."]
+    else: 
+        answers = [f"There were <b>{len(final_results)}</b> claims detected in the text you submitted that might need fact-checking."]
+        for claim, elements in final_results.items():
+            if len(elements) == 0:
+                answers.append(f"<b>'{claim}'</b> was identified in the text as a statement that might need fact-checking, but no related fact-check articles have been found. Nonetheless, you may have to verify this claim. For more information on the articles included in this search, please refer to <a href='https://toolbox.google.com/factcheck/about#fcmt-claimreview' target='_blank'>Google Fact Check Tools</a>.")
+            else:
+                answers.append(f"Claim: {claim}")
+                answers.append("Possibly related fact-checks:")
+                for (factual_claim, publisher, verdict, url, formatted_date) in elements:
+                    answer = f"Fact-checked claim: {factual_claim}<br>Review date: {formatted_date}<br>Verdict: {verdict}<br>Publisher: <a href='{url}' target='_blank'>{publisher}</a>"
+                    answers.append(answer)
 
     print(f"Answers: {answers}")
 
