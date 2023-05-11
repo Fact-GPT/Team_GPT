@@ -39,7 +39,7 @@
         </div>
     </form>
     <div id="error-message" style="color: red;"></div>
-    <div class="separator">
+    <!-- <div class="separator">
         <hr>
         <span>OR</span>
         <hr>
@@ -54,14 +54,14 @@
             <input type="submit" value="Upload" id="upload_file" disabled>
         </div>
     </form>
-</div>
+</div> -->
 
 <script>
     // Get the elements
     const textInput = document.getElementById('text_input');
     const submitText = document.getElementById('submit_text');
-    const fileInput = document.getElementById('file');
-    const uploadFile = document.getElementById('upload_file');
+    // const fileInput = document.getElementById('file');
+    // const uploadFile = document.getElementById('upload_file');
     const charCounter = document.getElementById('char_counter');
 
     // Add event listeners
@@ -94,21 +94,21 @@
         document.getElementById('error-message').innerText = fileInput.validationMessage;
     });
 
-    fileInput.addEventListener('change', () => {
-        const fileExtension = fileInput.value.split('.').pop().toLowerCase();
-        if (fileInput.files.length > 0 && (fileExtension === 'doc' || fileExtension === 'docx' || fileExtension === 'pdf')) {
-            uploadFile.disabled = false;
-            fileInput.setCustomValidity('');
-        } else {
-            uploadFile.disabled = true;
-            fileInput.setCustomValidity('Please upload a DOC, DOCX or PDF file.');
-        }
-    });
+    // fileInput.addEventListener('change', () => {
+    //     const fileExtension = fileInput.value.split('.').pop().toLowerCase();
+    //     if (fileInput.files.length > 0 && (fileExtension === 'doc' || fileExtension === 'docx' || fileExtension === 'pdf')) {
+    //         uploadFile.disabled = false;
+    //         fileInput.setCustomValidity('');
+    //     } else {
+    //         uploadFile.disabled = true;
+    //         fileInput.setCustomValidity('Please upload a DOC, DOCX or PDF file.');
+    //     }
+    // });
 
-    fileInput.addEventListener('invalid', (e) => {
-        e.preventDefault();
-        alert(fileInput.validationMessage);
-    });
+    // fileInput.addEventListener('invalid', (e) => {
+    //     e.preventDefault();
+    //     alert(fileInput.validationMessage);
+    // });
 
     // Form submission using AJAX
     $(document).ready(function() {
