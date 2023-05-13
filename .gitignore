@@ -1,0 +1,6 @@
+.git
+ipynb_checkpoints
+prototype/.DS_Store
+prototype/venv
+prototype/__pycache__
+prototype/config.py
