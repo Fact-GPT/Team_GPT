@@ -9,13 +9,13 @@ This project, by students in Cardiff University's 2022/2023 MSc Computational an
 
 The fact-check review finder does the following:
 
-1. Takes text input via a text box OR an uploaded DOCX and PDF file
+1. Takes text input from a user
 
 2. Identifies claims that might need fact-checking and extracts keywords relevant to these using OpenAI's GPT-3.5-Turbo model
 
 3.Inputs these keywords as queries in a database of fact checking articles using Google's Fact Check Tools API: https://developers.google.com/fact-check/tools/api 
 
-4. Returns a list of fact check articles (including the claim checked, source and URL) that may be relevant to claims identified in the text
+4. Returns a list of claims that might need to be fact-checked, as well as any fact check articles (including the claim checked, date, verdict, publisher and URL) that may be relevant to claims identified in the text
 
 Generative AI is currently unreliable in fact-checking claims by itself. However, as a language model it has potential in understanding what claims may look like. We aim to combine this potential with Google Fact Check Tools' database of actual reviews of claims by legitimate organisations such as AFP Fact Check, PolitiFact and Full Fact, to help journalists detect any claims in source material that may already have been debunked without having to manually search for each claim themselves.
 
@@ -43,6 +43,8 @@ OpenAI released a newer GPT-4 model on a limited basis on 14 March, 2023. Althou
 We are looking to refine the prompts to further improve the consistency, accuracy and relevance of results. 
 
 Rather than simply listing potentially related fact checks, we want to work towards returning a summary of their contents. Currently, the time taken to scrape the content of the articles and summarise them is too long and may affect the user experience. 
+
+Currently the tool can only detect fact check articles in English. More languages may be added in the future. 
 
 In the longer term, this programme could be made into a plug-in for browsers or text editors, which highlights potential claims and relevant fact-checks in real-time. 
 
