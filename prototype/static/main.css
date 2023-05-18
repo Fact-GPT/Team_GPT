@@ -26,10 +26,6 @@ body {
   align-items: center;
   padding-top: 60px;
 }
-#desc-box {
-  background-color: lightgrey;
-  padding: 20px;
-}
 
 .icon {
   width: 80px;
@@ -41,11 +37,20 @@ h3 {
   color: #202123;
   margin: 16px 0 40px;
 }
+
+/* Styles for form */
+
 form {
   display: flex;
   flex-direction: column;
   width: 620px;
 }
+
+#text_form {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 input[type="text"] {
   padding: 12px 16px;
   border: 1px solid #10a37f;
@@ -56,59 +61,6 @@ input[type="text"] {
 ::placeholder {
   color: #8e8ea0;
   opacity: 1;
-}
-
-/* .result {
-  font-weight: bold;
-  font-size: 20px;
-  margin-top: 50px;
-} */
-
-#results_statement {
-  font-size: 24px;
-  text-align: center;
-}
-
-/* Styles for index description */
-
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0px;
-  margin-bottom: 0px;
-}
-
-p.description {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  text-align: justify;
-}
-
-#desc-box p {
-  font-size: 1rem;
-}
-
-ol {
-  font-size: 1.1rem;
-  padding-left: 20px;
-}
-
-li {
-  line-height: 1.6;
-  margin-bottom: 10px;
-}
-
-details {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-summary {
-  cursor: pointer;
-  font-weight: bold;
-  outline: none;
-  margin-bottom: 10px;
 }
 
 .form-group {
@@ -137,10 +89,63 @@ input[type="submit"] {
   font-size: 1.1rem; /* Increase font-size for better balance with the wider buttons */
 }
 
-
 input[type="submit"]:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+/* Styles for index description */
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0px;
+  margin-bottom: 0px;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: bold;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+details {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+#desc-box {
+  background-color: lightgrey;
+  padding: 20px;
+}
+
+p.description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+#desc-box p {
+  font-size: 1rem;
+}
+
+/* Styles for results page */
+
+#results_statement {
+  font-size: 24px;
+  text-align: center;
+}
+
+ol {
+  font-size: 1.1rem;
+  padding-left: 20px;
+}
+
+li {
+  line-height: 1.6;
+  margin-bottom: 10px;
 }
 
 #footnote {
@@ -148,17 +153,3 @@ input[type="submit"]:disabled {
   text-align: left;
 }
 
-.separator {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.separator span {
-  background-color: #f8f9fa;
-  padding: 0 10px;
-}
-
-hr {
-  border: 1px solid #eee;
-  border-width: 1px 0 0;
-}
