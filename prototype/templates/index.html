@@ -4,34 +4,35 @@
 <div class="container">
     <details>
         <summary>About this project</summary>
+        <div id="desc-box">
     <p class="description">
         Created by students in Cardiff University's 2022/2023 MSc Computational and Data Journalism programme cohort, Fact-GPT is an experimental fact-checking tool using generative AI. It was built with journalists in mind, although it may have uses for broader audiences such as general news consumers curious about the accuracy of articles they are reading.
     </p>
-    <p class="description">
-        Fact-GPT does the following:
-    </p>
-    <ol>
-        <li>Takes text input via a text box up to 5000 characters</li>
-        <li>Identifies claims that might need fact-checking and extracts keywords relevant to these using OpenAI's GPT-3.5-Turbo model</li>
-        <li>Inputs these keywords as queries in a database of fact check articles using <a href="https://developers.google.com/fact-check/tools/api">Google's Fact Check Tools API</a> (for more information on the articles included in this search, please refer to <a href='https://toolbox.google.com/factcheck/about#fcmt-claimreview' target='_blank'>Google Fact Check Tools</a>)</li>
-        <li>Returns a list of claims that may need to be fact-checked, as well as any published fact check articles found in the database that may be relevant to claims identified in the text.</li>
-    </ol>
     <p class="description">
         Generative AI is currently unreliable in fact-checking claims by itself. However, as a language model it has potential in understanding what claims may look like. We aim to combine this potential with Google Fact Check Tools' database of actual reviews of claims by legitimate organisations such as AFP Fact Check, PolitiFact and Full Fact, to help journalists detect any claims in source material that may already have been debunked without having to manually search for each claim themselves.
     </p>
     <p class="description">
         This tool is currently in an early testing stage, and not all results may be relevant. If you have any feedback or suggestions, please email <a href="mailto:gillm2@cardiff.ac.uk"> Mehr Gill</a>, <a href="mailto:yoshidak1@cardiff.ac.uk">Koh Yoshida</a> or <a href="mailto:zhum17@cardiff.ac.uk">Melissa Zhu</a>. 
     </p>
-    <p class="description">
-        To try the tool, please input some text below, up to a maximum of 5000 characters. For best results, the text should be in English, and contain at least one complete statement (instead of just keywords). 
-    </p>
+    </div>
 </details>
 </div>
 <div class="container">
+    <p class="description">
+        Fact-GPT does the following:
+    </p>
+    <ol>
+        <li>Takes text input from the user</li>
+        <li>Identifies claims that might need fact-checking and extracts keywords relevant to these using OpenAI's GPT-3.5-Turbo model</li>
+        <li>Searches for information related to the claims in a database of fact check articles, with the previously extracted keywords, using Google's Fact Check Tools API</li>
+        <li>Returns a list of claims that may need to be fact-checked, as well as any published fact check articles found in the database that may be relevant to claims identified in the text.</li>
+    </ol>
+    <p class="description">
+        To try the tool, please input some text below, up to a maximum of 5000 characters. For best results, the text should be in English, and contain at least one complete statement (instead of just keywords). 
+    </p>
     <form id="text_form" action="/loading" method="post" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="text_input">Enter some text:</label>
-            <textarea name="text_input" id="text_input" rows="10" placeholder="Enter text (max 5000 characters):"></textarea>
+            <textarea name="text_input" id="text_input" rows="10" placeholder="Enter some text containing claims you would like to fact-check"></textarea>
             <p id="char_counter" style="text-align: right;">0 / 5000</p>
         </div>
         <div class="form-group">

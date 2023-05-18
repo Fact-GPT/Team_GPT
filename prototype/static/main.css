@@ -26,6 +26,11 @@ body {
   align-items: center;
   padding-top: 60px;
 }
+#desc-box {
+  background-color: lightgrey;
+  padding: 20px;
+}
+
 .icon {
   width: 80px;
 }
@@ -77,6 +82,10 @@ p.description {
   font-size: 1.1rem;
   line-height: 1.6;
   text-align: justify;
+}
+
+#desc-box p {
+  font-size: 1rem;
 }
 
 ol {
